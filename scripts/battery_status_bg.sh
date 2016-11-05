@@ -4,39 +4,39 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 source "$CURRENT_DIR/helpers.sh"
 
-color_full_charge_default="#[bg=green]"
-color_high_charge_default="#[bg=yellow]"
-color_medium_charge_default="#[bg=colour208]" # orange
-color_low_charge_default="#[bg=red]"
+default_fg_color_palette="88 124 160 196 202 208 214 220 226 190 154 118 112 82 46"
+default_bg_color_palette="default"
 
-color_full_charge=""
-color_high_charge=""
-color_medium_charge=""
-color_low_charge=""
+fg_color_palette=""
+bg_color_palette=""
 
 get_charge_color_settings() {
-    color_full_charge=$(get_tmux_option "@batt_color_full_charge" "$color_full_charge_default")
-    color_high_charge=$(get_tmux_option "@batt_color_high_charge" "$color_high_charge_default")
-    color_medium_charge=$(get_tmux_option "@batt_color_medium_charge" "$color_medium_charge_default")
-    color_low_charge=$(get_tmux_option "@batt_color_low_charge" "$color_low_charge_default")
+    fg_color_palette=($(get_tmux_option "@batt_fg_color_palette" "$default_fg_color_palette" | sed -E 's/([0-9]+)/colour\1/g'))
+    bg_color_palette=($(get_tmux_option "@batt_bg_color_palette" "$default_bg_color_palette" | sed -E 's/([0-9]+)/colour\1/g'))
+}
+
+get_color_idx() {
+    percentage="$1"
+    palette=("${!2}")
+    palette_size="${#palette[@]}"
+
+    color_idx=$(awk "BEGIN { printf \"%.0f\", $palette_size / (100/$palette_size) * ($percentage/$palette_size) }")
+    color_idx=$(( (color_idx == 0 ? 1 : color_idx)-1 ))
+
+    echo "$color_idx"
 }
 
 print_battery_status_bg() {
-    # Call `battery_percentage.sh`.
     percentage=$($CURRENT_DIR/battery_percentage.sh | sed -e 's/%//')
-    if [ $percentage -eq 100 ]; then
-        printf $color_full_charge
-    elif [ $percentage -le 99 -a $percentage -ge 51 ];then
-        printf $color_high_charge
-    elif [ $percentage -le 50 -a $percentage -ge 16 ];then
-        printf $color_medium_charge
-    else
-        printf $color_low_charge
-    fi
+
+    fg_color_idx=$(get_color_idx $percentage fg_color_palette[@])
+    bg_color_idx=$(get_color_idx $percentage bg_color_palette[@])
+
+    printf "#[fg=${fg_color_palette[$fg_color_idx]},bg=${bg_color_palette[$bg_color_idx]}]"
 }
 
 main() {
     get_charge_color_settings
-	print_battery_status_bg
+    print_battery_status_bg
 }
 main
