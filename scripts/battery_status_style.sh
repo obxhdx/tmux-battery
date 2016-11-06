@@ -26,7 +26,7 @@ get_color_idx() {
     echo "$color_idx"
 }
 
-print_battery_status_bg() {
+print_battery_status_style() {
     percentage=$($CURRENT_DIR/battery_percentage.sh | sed -e 's/%//')
 
     fg_color_idx=$(get_color_idx $percentage fg_color_palette[@])
@@ -37,6 +37,6 @@ print_battery_status_bg() {
 
 main() {
     get_charge_color_settings
-    print_battery_status_bg
+    print_battery_status_style
 }
 main

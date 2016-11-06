@@ -8,14 +8,14 @@ battery_interpolation=(
 	"\#{battery_percentage}"
 	"\#{battery_remain}"
 	"\#{battery_icon}"
-	"\#{battery_status_bg}"
+	"\#{battery_status_style}"
 	"\#{battery_graph}"
 )
 battery_commands=(
 	"#($CURRENT_DIR/scripts/battery_percentage.sh)"
 	"#($CURRENT_DIR/scripts/battery_remain.sh)"
 	"#($CURRENT_DIR/scripts/battery_icon.sh)"
-	"#($CURRENT_DIR/scripts/battery_status_bg.sh)"
+	"#($CURRENT_DIR/scripts/battery_status_style.sh)"
 	"#($CURRENT_DIR/scripts/battery_graph.sh)"
 )
 
